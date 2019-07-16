@@ -12,22 +12,23 @@ services:
     #see github.com/docker-libary/mongo/issues/174 to allow authentication
     networks: 
       - blog
+
     ports:
-      - 27017:27017
+      - '27017:27017'
 
   blog-api:
      build: . # build the local DockerFile
      image: blog-api:latest #name the Docker image as such
      container_name: blog-api
-     restart: unless-stopped
-#     depends_on:
-#       - mongo
+     restart: "no"
+     depends_on:
+     - mongo
      networks: 
-       - blog
+     - blog
      ports:
-       - 3000:3000
+       - '3000:3000'
 
 networks:
   blog:
-      name: blog-backend
-      driver: bridge
+    name: blog-backend
+    driver: bridge

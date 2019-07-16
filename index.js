@@ -11,7 +11,6 @@ const util = require('util')
 // Initialize the app
 let app = express();
 
-
 // Configure bodyparser to handle post requests
 app.use(bodyParser.urlencoded({
     extended: true
@@ -24,7 +23,7 @@ app.use(bodyParser.json());
 //var url = util.format('mongodb://%s:%s@%s/blogProject?authMechhanism=PLAIN', user, password, server);
 //mongoose.connect(url);
 
-mongoose.connect('mongodb://localhost/blogProject');
+mongoose.connect('mongodb://mongo:27017/blogProject');
 var db = mongoose.connection;
 // Setup server port
 const port = process.env.PORT || 3000;
