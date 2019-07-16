@@ -4,10 +4,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 // Import Mongoose
 const mongoose = require('mongoose');
+// Import routes
+const apiRoutes = require("./api-routes-blogpost")
+const util = require('util')
+
 // Initialize the app
 let app = express();
-// Import routes
-let apiRoutes = require("./api-routes")
+
 
 // Configure bodyparser to handle post requests
 app.use(bodyParser.urlencoded({
@@ -15,10 +18,16 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 // Connect to Mongoose and set connection variable
-mongoose.connect('mongodb://localhost/resthub');
+//var user = 'username';
+//var password = 'password';
+//var server = 'localhost'; 
+//var url = util.format('mongodb://%s:%s@%s/blogProject?authMechhanism=PLAIN', user, password, server);
+//mongoose.connect(url);
+
+mongoose.connect('mongodb://localhost/blogProject');
 var db = mongoose.connection;
 // Setup server port
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 // Send message for default URL
 app.get('/', (req, res) => res.send('Hello World with Express'));
 // Use Api routes in the App
