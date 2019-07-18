@@ -4,7 +4,9 @@
   "description": "An web application for bloggers",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "run-local": "cross-env MONGODB_ENV=local node index",
+    "run-prod": "cross-env MONGODB_ENV=docker node index"
   },
   "keywords": [
     "restful",
@@ -16,6 +18,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "mongoose": "^5.6.4"
+    "mongoose": "^5.6.4",
+    "cross-env": "^5.2.0"
   }
 }
