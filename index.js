@@ -5,8 +5,9 @@ const bodyParser = require('body-parser');
 // Import Mongoose
 const mongoose = require('mongoose');
 // Import routes
-const apiRoutes = require("./api-routes-blogpost")
-const util = require('util')
+const apiRoutes = require("./api-routes")
+
+//const util = require('util')
 
 // Initialize the app
 let app = express();
@@ -23,6 +24,7 @@ app.use(bodyParser.json());
 //var url = util.format('mongodb://%s:%s@%s/blogProject?authMechhanism=PLAIN', user, password, server);
 //mongoose.connect(url);
 
+//mongoose.connect('mongodb://localhost:27017/blogProject');
 mongoose.connect('mongodb://mongo:27017/blogProject');
 var db = mongoose.connection;
 // Setup server port
