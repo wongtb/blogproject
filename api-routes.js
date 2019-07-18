@@ -18,7 +18,14 @@ router.route('/blogpost/:contact_id')
     .get(blogpostController.view)
     .patch(blogpostController.update)
     .put(blogpostController.update)
-    //.delete(blogpostController.delete);
+    .delete(blogpostController.delete);
+
+router.route('/blogpost/upvote/:contact_id')
+    .put(blogpostController.upvote)
+
+router.route('/blogpost/downvote/:contact_id')
+    .put(blogpostController.downvote)
+    
 
 // Import user controller and routes
 var UserController = require('./user/UserController');

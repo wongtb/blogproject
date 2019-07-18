@@ -55,7 +55,6 @@ exports.view = function (req, res) {
 
 
 // Handle update blog post
-
 exports.update = function (req, res) {
     BlogPost.findById(req.params.contact_id, function (err, blogpost) {
         if (err)
@@ -66,7 +65,7 @@ exports.update = function (req, res) {
         //blogpost.likeCounter = 0; 
         blogpost.create_date = blogpost.create_date ;
 
-// save the contact and check for errors
+// save the blog post and check for errors
         blogpost.save(function (err) {
             if (err)
                 res.json(err);
@@ -78,18 +77,54 @@ exports.update = function (req, res) {
     });
 }; 
 
-// Handle delete contact
-/*
+// delete a blog post
 exports.delete = function (req, res) {
-    Contact.remove({
-        _id: req.params.contact_id
-    }, function (err, contact) {
+    blogpost.remove({_id: req.params.contact_id}, 
+    function (err, contact) {
         if (err)
             res.send(err);
-res.json({
+        res.json({
             status: "success",
             message: 'Contact deleted'
         });
     });
 };
-*/
+
+//upvote a blog post
+exports.upvote = function (req, res) {
+    BlogPost.findById(req.params.contact_id, function (err, blogpost) {
+        if (err)
+            res.send(err);
+        blogpost.likeCounter++; 
+
+        // save the new blogpost save counter
+        blogpost.save(function (err) {
+            if (err)
+                res.json(err);
+            res.json({
+                message: 'Blog Post upvoted',
+                data: blogpost
+            });
+        });
+    });
+};
+
+
+//downvote a blog post
+exports.downvote = function (req, res) {
+    BlogPost.findById(req.params.contact_id, function (err, blogpost) {
+        if (err)
+            res.send(err);
+        blogpost.likeCounter--; 
+
+        // save the new blogpost save counter
+        blogpost.save(function (err) {
+            if (err)
+                res.json(err);
+            res.json({
+                message: 'Blog Post downvoted',
+                data: blogpost
+            });
+        });
+    });
+};

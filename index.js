@@ -1,26 +1,17 @@
 // Import express
 const express = require('express');
-// Import Body parser
 const bodyParser = require('body-parser');
-// Import Mongoose
 const mongoose = require('mongoose');
-// Import routes
 const apiRoutes = require("./api-routes")
-// Import users library
 const userRoutes = require("./user/UserController")
-
-// Import environment variables
 const dotenv = require('dotenv').config(); 
 
 // Initialize the app
 let app = express();
 
 // Configure bodyparser to handle post requests
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
 
 // Connect to server
 if (process.env.MONGODB_ENV=='docker') {
@@ -40,7 +31,6 @@ if (process.env.MONGODB_ENV=='docker') {
     DB_Name = 'blogProject'
     URI = URIbase.concat(DB_ServerIP, ':', DB_Port, '/', DB_Name);
 }
-
 //console.log(URI);
 //console.log(process.env.DB_SECRET);
 //console.log(process.env.DB_USER);

@@ -49,6 +49,20 @@ router.post('/login', function(req, res) {
     
   });
 
+// LOGOUT A USER -> DELETE /api/user/login
+router.post('/login', function( req, res){
+
+    // return temporary OOS signal
+    return res.status(404).send('User not logged out.  Function not implemented yet.')
+
+    // decrypt the users sent JWT here
+    // return an expired JWT here
+    var token = jwt.sign({ id: user._id }, process.env.SECRET, {
+        expiresIn: 0 // expire now
+      });
+})
+  
+
 // RETURNS ALL THE USERS IN THE DATABASE -> GET /api/user/
 router.get('/', function (req, res) {
     User.find({}, function (err, users) {
