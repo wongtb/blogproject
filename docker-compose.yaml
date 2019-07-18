@@ -5,10 +5,15 @@ services:
   mongo: 
     image: mongo:latest 
     container_name: blog-mongo
-    restart: unless-stopped
-    #environment: 
-    #  - "MONGO_INITDB_ROOT_USERNAME=username"
-    #  - "MONGO_INITDB_ROOT_PASSWORD=password"
+    #restart: "no"
+    env_file: 
+      - .env
+#    environment: 
+#      - "MONGO_INITDB_ROOT_USERNAME=${DB_USER}"
+#      - "MONGO_INITDB_ROOT_PASSWORD=${DB_PASS}"
+#      - "MONGO_INITDB_DATABASE=blogProject"
+#      - "MONGO_INITDB_ROOT_USERNAME=brian"
+#      - "MONGO_INITDB_ROOT_PASSWORD=wong"
     #see github.com/docker-libary/mongo/issues/174 to allow authentication
     networks: 
       - blog
@@ -19,7 +24,7 @@ services:
      build: . # build the local DockerFile
      image: blog-api:latest #name the Docker image as such
      container_name: blog-api
-     restart: "no"
+     restart: unless-stopped
      depends_on:
       - mongo
      networks:
