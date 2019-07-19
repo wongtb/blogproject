@@ -1,5 +1,5 @@
-// contactModel.js
 var mongoose = require('mongoose');
+
 // Setup schema
 var postSchema = mongoose.Schema({
     title: {
@@ -23,6 +23,7 @@ var postSchema = mongoose.Schema({
         default: Date.now
     }
 });
+
 // Export Contact model
 var Contact = module.exports = mongoose.model('blogPost', postSchema);
 module.exports.get = function (callback, limit) {

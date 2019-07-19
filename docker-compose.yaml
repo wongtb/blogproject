@@ -8,13 +8,12 @@ services:
     #restart: "no"
     env_file: 
       - .env
-#    environment: 
+    environment: 
 #      - "MONGO_INITDB_ROOT_USERNAME=${DB_USER}"
 #      - "MONGO_INITDB_ROOT_PASSWORD=${DB_PASS}"
 #      - "MONGO_INITDB_DATABASE=blogProject"
-#      - "MONGO_INITDB_ROOT_USERNAME=brian"
-#      - "MONGO_INITDB_ROOT_PASSWORD=wong"
-    #see github.com/docker-libary/mongo/issues/174 to allow authentication
+      - "MONGO_INITDB_ROOT_USERNAME=brian"
+      - "MONGO_INITDB_ROOT_PASSWORD=wong"
     networks: 
       - blog
     ports:

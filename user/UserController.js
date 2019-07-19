@@ -1,6 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var bodyParser = require('body-parser');
+const express = require('express');
+const router = express.Router();
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs'); 
 const dotenv = require('dotenv').config(); // Import environment variables
 
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -16,7 +18,7 @@ router.post('/', function (req, res) {
     User.create({
             name : req.body.name,
             email : req.body.email,
-            ppassword : hashedPassword
+            password : hashedPassword
         }, 
         function (err, user) {
             if (err) return res.status(500).send("There was a problem adding the information to the database.");
@@ -50,7 +52,7 @@ router.post('/login', function(req, res) {
   });
 
 // LOGOUT A USER -> DELETE /api/user/login
-router.post('/login', function( req, res){
+router.delete('/login', function( req, res){
 
     // return temporary OOS signal
     return res.status(404).send('User not logged out.  Function not implemented yet.')
