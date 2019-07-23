@@ -7,29 +7,36 @@ const dotenv = require('dotenv').config(); // Import environment variables
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
+
 var User = require('./User');
 
 
 // CREATES A NEW USER ->  POST /api/user/
 router.post('/', function (req, res) {
 
-    var hashedPassword = bcrypt.hashSync(req.body.password, 8);
+    User.findOne({ email: req.body.email }, function (err, user) {
+        if (user) { return res.status(403).send("User account not created.  " + req.body.email + " is already associated with a user account.");}
 
-    User.create({
-            name : req.body.name,
-            email : req.body.email,
-            password : hashedPassword
-        }, 
-        function (err, user) {
-            if (err) return res.status(500).send("There was a problem adding the information to the database.");
-
-            //create a toekn
-            var token = jwt.sign({ id: user._id}, process.env.DB_SECRET, {
-                expiresIn: 86400 // 24hrs;
+        var hashedPassword = bcrypt.hashSync(req.body.password, 8);
+        //var hashedAuthorization = bcrypt.hashSync("0", 8);
+    
+        User.create({
+                name : req.body.name,
+                email : req.body.email,
+                password : hashedPassword,
+            }, 
+            function (err, user) {
+                if (err) return res.status(500).send("There was a problem adding the information to the database.");
+    
+                //create a toekn
+                var token = jwt.sign({ id: user._id}, process.env.DB_SECRET, {
+                    expiresIn: 86400 // 24hrs;
+                });
+                res.status(200).send({ auth: true, token: token }); 
+    
             });
-            res.status(200).send({ auth: true, token: token }); 
+    }); 
 
-        });
 });
 
 // LOGIN A USER -> POST /api/user/login
@@ -42,11 +49,11 @@ router.post('/login', function(req, res) {
       var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
       if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
       
-      var token = jwt.sign({ id: user._id }, process.env.SECRET, {
+      var token = jwt.sign({ id: user._id }, process.env.DB_SECRET, {
         expiresIn: 86400 // expires in 24 hours
       });
       
-      res.status(200).send({ auth: true, token: token });
+      res.status(201).send({ auth: true, token: token });
     });
     
   });
@@ -55,7 +62,7 @@ router.post('/login', function(req, res) {
 router.delete('/login', function( req, res){
 
     // return temporary OOS signal
-    return res.status(404).send('User not logged out.  Function not implemented yet.')
+    return res.status(501).send('User not logged out.  Function not implemented yet.')
 
     // decrypt the users sent JWT here
     // return an expired JWT here

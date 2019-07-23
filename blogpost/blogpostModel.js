@@ -21,6 +21,11 @@ var postSchema = mongoose.Schema({
     create_date: {
         type: Date,
         default: Date.now
+    },
+
+    edit_date: {
+        type: Date,
+        default: Date.now
     }
 });
 

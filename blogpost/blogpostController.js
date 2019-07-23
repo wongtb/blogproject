@@ -2,6 +2,7 @@ const BlogPost = require('./blogpostModel');
     jwt = require('jsonwebtoken');
     bcrypt = require('bcryptjs'); 
     User = require('../user/User')
+    validateToken = require('../user/authenticateUser')
 
 // Handle index actions
 exports.index = function (req, res) { 
@@ -22,39 +23,32 @@ exports.index = function (req, res) {
 // Handle create contact actions
 exports.new = function (req, res) {
 
-    // code for handling JWT
-    var token = req.headers['x-access-token']; 
-    if(!token) return res.status(401).send({ auth : false, message: 'No token provided.'}); 
-    jwt.verify(token, process.env.DB_SECRET, function(err, decoded){ 
-        if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });  
-        User.findById(decoded.id, { password: 0 }, function (err, user) { 
-            if (err) return res.status(500).send("There was a problem finding the user."); 
-            if (!user) return res.status(404).send("No user found.");             
-            res.status(200);
+    // Send Post
+    var blogpost = new BlogPost();
+    blogpost.title = req.body.title; 
+    blogpost.author = req.user_id; 
+    blogpost.post = req.body.post;
+    blogpost.likeCounter = 0; 
 
-            // Send Post
-            var blogpost = new BlogPost();
-            blogpost.title = req.body.title; 
-            blogpost.author = decoded.id; 
-            blogpost.post = req.body.post;
-            blogpost.likeCounter = 0; 
-            //blogpost.create_date = req.body.create_date;
-        
-            // save the Blog Post and check for errors
-            blogpost.save(function (err) {
-                res.json({
-                    message: 'New post created!',
-                    data: blogpost.title
-                });
-            });
-        }); 
-    }); 
-};
+    // save the Blog Post and check for errors
+    blogpost.save(function (err) {
+        if (err) {res.json(err);}
+
+        res.json({
+            message: 'New post created!',
+            id: blogpost._id
+        });
+    });
+}
+
+
 // Handle view contact info
 exports.view = function (req, res) {
-    BlogPost.findById(req.params.contact_id, function (err, blogpost) {
-        if (err)
-            res.send(err);
+    BlogPost.findById(req.params.post_id, function (err, blogpost) {
+        // cannot be found
+        if (err) {return res.status(400).send(err);}
+        if (!blogpost) {return res.status(400).send("Blog post " + req.params.post_id + " was not found.")}
+
         res.json({
             message: 'Blog retrieved',
             data: blogpost
@@ -65,19 +59,20 @@ exports.view = function (req, res) {
 
 // Handle update blog post
 exports.update = function (req, res) {
-    BlogPost.findById(req.params.contact_id, function (err, blogpost) {
-        if (err)
-            res.send(err);
-        //blogpost.title = req.body.title; 
-        //blogpost.author = req.body.author;
-        blogpost.post = req.body.post;
-        //blogpost.likeCounter = 0; 
-        blogpost.create_date = blogpost.create_date ;
+    BlogPost.findById(req.params.post_id, function (err, blogpost) {
+        if (err) {return res.status(400).send(err);};
+        if (!blogpost) {return res.status(400).send("Blog post with ID " + req.params.post_id + " was not found.")}
+        if (blogpost.author!=req.user_id) {return res.status(401).send("You do not have the authorization to edit this post.")}; 
 
-// save the blog post and check for errors
+        //console.log('Blogpost Author ID = ' + blogpost.author);
+        //console.log('Token ID = ' + blogpost.author);
+        //console.log('Not Equal? = ' + String(blogpost.author!=req.user_id)); 
+
+         // save the blog post and check for errors
+        blogpost.post = req.body.post;
+        blogpost.edit_date = new Date();
         blogpost.save(function (err) {
-            if (err)
-                res.json(err);
+            if (err) {return res.status(400).send("Failed to save data to database.  Error: " + err);}
             res.json({
                 message: 'Blog Post updated',
                 data: blogpost
@@ -88,31 +83,37 @@ exports.update = function (req, res) {
 
 // delete a blog post
 exports.delete = function (req, res) {
-    blogpost.remove({_id: req.params.contact_id}, 
-    function (err, contact) {
-        if (err)
-            res.send(err);
-        res.json({
-            status: "success",
-            message: 'Contact deleted'
+    BlogPost.findById(req.params.post_id, function (err, blogpost) {
+        if (err) {return res.status(400).send(err);};
+        if (!blogpost) {return res.status(400).send("Blog post with ID " + req.params.post_id + " was not found.")}
+        if (blogpost.author!=req.user_id) {return res.status(401).send("You do not have the authorization to delete this post.")}; 
+
+        blogpost.remove({_id: req.params.post_id}, function (err, contact) {
+            if (err) { return res.status(400).send("Failed to delete data from database.  Error: " + err);}
+            res.json({
+                status: "success",
+                message: 'Blog post deleted'
+            });
         });
-    });
+    }); 
 };
 
 //upvote a blog post
 exports.upvote = function (req, res) {
-    BlogPost.findById(req.params.contact_id, function (err, blogpost) {
-        if (err)
-            res.send(err);
+    BlogPost.findById(req.params.post_id, function (err, blogpost) {
+        if (err) { return res.send(err);}
+        if (!blogpost) {return res.status(400).send("Blog post with ID " + req.params.post_id + " was not found.")}
+        if (!req.user_id) {return res.status(401).send("Please log in to upvote or downvote")}; 
+
         blogpost.likeCounter++; 
 
         // save the new blogpost save counter
         blogpost.save(function (err) {
             if (err)
-                res.json(err);
+                return res.json(err);
             res.json({
                 message: 'Blog Post upvoted',
-                data: blogpost
+                data: blogpost.likeCounter
             });
         });
     });
@@ -121,18 +122,20 @@ exports.upvote = function (req, res) {
 
 //downvote a blog post
 exports.downvote = function (req, res) {
-    BlogPost.findById(req.params.contact_id, function (err, blogpost) {
-        if (err)
-            res.send(err);
+    BlogPost.findById(req.params.post_id, function (err, blogpost) {
+        if (err) { return res.send(err);}
+        if (!blogpost) {return res.status(400).send("Blog post with ID " + req.params.post_id + " was not found.")}
+        if (!req.user_id) {return res.status(401).send("Please log in to upvote or downvote")}; 
+
         blogpost.likeCounter--; 
 
         // save the new blogpost save counter
         blogpost.save(function (err) {
             if (err)
-                res.json(err);
+                return res.json(err);
             res.json({
                 message: 'Blog Post downvoted',
-                data: blogpost
+                data: blogpost.likeCounter
             });
         });
     });

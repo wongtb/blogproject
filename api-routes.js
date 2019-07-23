@@ -1,6 +1,7 @@
 // api-routes.js
 // Initialize express router
 let router = require('express').Router();
+
 // Set default API response
 router.get('/', function (req, res) {
     res.json({
@@ -9,28 +10,25 @@ router.get('/', function (req, res) {
     });
 });
 // Import blog post controller and Routes
-var blogpostController = require('./blogpost/blogpostController');
+var blogpost = require('./blogpost/blogpostController');
+var authentication = require('./user/authenticateUser')
 
 router.route('/blogpost')
-    .get(blogpostController.index)
-    .post(blogpostController.new);
+    .get(blogpost.index)
+    .post(authentication.validateToken, blogpost.new);
 
-router.route('/blogpost/:contact_id')
-    .get(blogpostController.view)
-    .patch(blogpostController.update)
-    .put(blogpostController.update)
-    .delete(blogpostController.delete);
+router.route('/blogpost/:post_id')
+    .get(blogpost.view)
+    .patch(authentication.validateToken, blogpost.update)
+    .put(authentication.validateToken, blogpost.update)
+    .delete(authentication.validateToken,blogpost.delete);
 
-router.route('/blogpost/upvote/:contact_id')
-    .put(blogpostController.upvote)
+router.route('/blogpost/upvote/:post_id')
+    .put(authentication.validateToken, blogpost.upvote)
 
-router.route('/blogpost/downvote/:contact_id')
-    .put(blogpostController.downvote)
+router.route('/blogpost/downvote/:post_id')
+    .put(authentication.validateToken, blogpost.downvote)
     
-
-// Import user controller and routes
-//var UserController = require('./user/UserController');
-//router.route('/users', UserController);
 
 // Export API routes
 module.exports = router;
