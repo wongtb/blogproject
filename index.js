@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 // Setup connection to the database
-require('./database'); 
+var db = require('./database'); 
 
 // Send message for default URL
 app.get('/', (req, res) => res.send('Blog Server is up.'));

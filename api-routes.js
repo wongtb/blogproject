@@ -10,6 +10,7 @@ router.get('/', function (req, res) {
 });
 // Import blog post controller and Routes
 var blogpostController = require('./blogpost/blogpostController');
+
 router.route('/blogpost')
     .get(blogpostController.index)
     .post(blogpostController.new);
@@ -28,8 +29,8 @@ router.route('/blogpost/downvote/:contact_id')
     
 
 // Import user controller and routes
-var UserController = require('./user/UserController');
-router.route('/users', UserController);
+//var UserController = require('./user/UserController');
+//router.route('/users', UserController);
 
 // Export API routes
 module.exports = router;

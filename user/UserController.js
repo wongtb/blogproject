@@ -24,7 +24,7 @@ router.post('/', function (req, res) {
             if (err) return res.status(500).send("There was a problem adding the information to the database.");
 
             //create a toekn
-            var token = jwt.sign({ id: user._id}, process.env.SECRET, {
+            var token = jwt.sign({ id: user._id}, process.env.DB_SECRET, {
                 expiresIn: 86400 // 24hrs;
             });
             res.status(200).send({ auth: true, token: token }); 

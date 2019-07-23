@@ -1,6 +1,7 @@
-BlogPost = require('./blogpostModel');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs'); 
+const BlogPost = require('./blogpostModel');
+    jwt = require('jsonwebtoken');
+    bcrypt = require('bcryptjs'); 
+    User = require('../user/User')
 
 // Handle index actions
 exports.index = function (req, res) { 
@@ -24,25 +25,23 @@ exports.new = function (req, res) {
     // code for handling JWT
     var token = req.headers['x-access-token']; 
     if(!token) return res.status(401).send({ auth : false, message: 'No token provided.'}); 
-    jwt.verify(token, process.env.SECRET, function(err, decoded){ 
+    jwt.verify(token, process.env.DB_SECRET, function(err, decoded){ 
         if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });  
         User.findById(decoded.id, { password: 0 }, function (err, user) { 
             if (err) return res.status(500).send("There was a problem finding the user."); 
             if (!user) return res.status(404).send("No user found.");             
-            res.status(200).send(user); 
+            res.status(200);
 
             // Send Post
             var blogpost = new BlogPost();
             blogpost.title = req.body.title; 
-            blogpost.author = req.body.author;
+            blogpost.author = decoded.id; 
             blogpost.post = req.body.post;
             blogpost.likeCounter = 0; 
-            blogpost.create_date = req.body.create_date;
+            //blogpost.create_date = req.body.create_date;
         
             // save the Blog Post and check for errors
             blogpost.save(function (err) {
-                 //if (err)
-                 //   res.json(err);
                 res.json({
                     message: 'New post created!',
                     data: blogpost.title

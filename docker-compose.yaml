@@ -11,7 +11,7 @@ services:
     environment: 
 #      - "MONGO_INITDB_ROOT_USERNAME=${DB_USER}"
 #      - "MONGO_INITDB_ROOT_PASSWORD=${DB_PASS}"
-#      - "MONGO_INITDB_DATABASE=blogProject"
+      - "MONGO_INITDB_DATABASE=blogProject"
       - "MONGO_INITDB_ROOT_USERNAME=brian"
       - "MONGO_INITDB_ROOT_PASSWORD=wong"
     networks: 
