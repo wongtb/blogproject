@@ -15,7 +15,11 @@ var authentication = require('./user/authenticateUser')
 
 router.route('/blogpost')
     .get(blogpost.index)
-    .post(authentication.validateToken, blogpost.new);
+    .post(authentication.validateToken, blogpost.new)
+    .put(function(req, res){
+        console.log(isNaN(req.query.offset))
+        //console.log("2" + req.query.hih)
+    });
 
 router.route('/blogpost/:post_id')
     .get(blogpost.view)

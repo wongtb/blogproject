@@ -17,7 +17,7 @@ console.log(URI);
 function connectToDB(URI, options, attempts) {
     setTimeout(()=>{
         attempts++; 
-        if (attempts <= 1) {//process.env.DB_MAXRECONNECT) {
+        if (attempts <= process.env.DB_MAXRECONNECT) {
             return mongoose.connect(URI, options).catch(error => {
                 console.log('*** Retrying connection: ' + attempts + '/' + process.env.DB_MAXRECONNECT + ' ***'); 
                 console.log('MongoDB Connection Error: ' + error);

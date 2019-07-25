@@ -6,17 +6,39 @@ const BlogPost = require('./blogpostModel');
 
 // Handle index actions
 exports.index = function (req, res) { 
-    BlogPost.get(function (err, blogpost) {
-        if (err) {
+    // If query is invalid, error out
+    var offset = +req.query.offset ? +req.query.offset : 0; 
+        limit = +req.query.limit ? +req.query.limit : 10; 
+
+    BlogPost
+        .find({})
+        .skip(offset)
+        .limit(limit)
+        .exec(function(err, blogpost) {
+            BlogPost.count().exec(function(err, count) {
+            var startingVal = +offset + +1;
+            var endingVal = Math.min(+offset + +limit, +count);
+
+            if (err) {
+                res.json({
+                    status: "error",
+                    message: err,
+                });
+            }
+
+            if (offset > count) {
+                res.json({
+                    status: "error",
+                    message: "offset is greater than the size of the database.  no data can be returned"
+                })
+            }
+
             res.json({
-                status: "error",
-                message: err,
+                status: "success",
+                message: "Blogs (" + String(+startingVal) + " to " + String(+endingVal) + ") have been retrieved.",
+                data: blogpost,
+                nextOffset: (count > (+offset+ +limit)) ? (+offset + +limit) : +offset
             });
-        }
-        res.json({
-            status: "success",
-            message: "Blog titles retrieved successfully",
-            data: blogpost
         });
     });
 };
