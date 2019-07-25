@@ -4,9 +4,9 @@
   "description": "An web application for bloggers",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "run-local": "cross-env MONGODB_ENV=local node index",
-    "run-prod": "cross-env MONGODB_ENV=docker node index"
+    "test": "cross-env MONGODB_ENV=docker NODE_ENV=test mocha",
+    "run-local": "cross-env MONGODB_ENV=local NODE_ENV=test node index",
+    "run-prod": "cross-env MONGODB_ENV=docker NODE_ENV=prod node index"
   },
   "keywords": [
     "restful",
@@ -23,5 +23,10 @@
     "dotenv": "8.0.0",
     "bcryptjs": "2.4.3",
     "jsonwebtoken": "8.5.1"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "mocha": "6.2.0",
+    "chai-http": "4.3.0"
   }
 }
