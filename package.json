@@ -4,9 +4,10 @@
   "description": "An web application for bloggers",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env MONGODB_ENV=docker NODE_ENV=test mocha",
+    "test": "cross-env MONGODB_ENV=local NODE_ENV=test mocha --timeout 10000",
     "run-local": "cross-env MONGODB_ENV=local NODE_ENV=test node index",
     "run-prod": "cross-env MONGODB_ENV=docker NODE_ENV=prod node index"
+    
   },
   "keywords": [
     "restful",

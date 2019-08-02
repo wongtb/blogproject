@@ -1,35 +1,50 @@
 const mongoose = require('mongoose');
+const async = require('async');
 const dotenv = require('dotenv').config();
 const options = {
     useNewUrlParser: true,
-    reconnectTries: process.env.DB_MAXRECONNECT,                
+    reconnectTries: process.env.DB_MAXRECONNECT,
     reconnectInterval: process.env.DB_RECONNECTMS,
-    family: 4             
+    family: 4
 };
 
 var DB_ServerIP = (process.env.MONGODB_ENV == 'docker') ? 'mongo' : 'localhost'; // spin up mongo via docker-compose, then use mongo ip
 var URI_AUTH = 'mongodb://' + process.env.DB_USER + ':' + process.env.DB_PASS + '@' + DB_ServerIP + ':' + process.env.DB_PORT + '/' + process.env.DB_NAME + "?authSource=admin"
-    URI_NOAUTH = 'mongodb://' + DB_ServerIP + ':' + process.env.DB_PORT + '/' + process.env.DB_NAME; 
-    URI = (process.env.MONGODB_ENV == 'docker') ? URI_AUTH : URI_NOAUTH; // if docker-compose, then mongo requires authorization.  
+URI_NOAUTH = 'mongodb://' + DB_ServerIP + ':' + process.env.DB_PORT + '/' + process.env.DB_NAME;
+URI = (process.env.MONGODB_ENV == 'docker') ? URI_AUTH : URI_NOAUTH; // if docker-compose, then mongo requires authorization.  
 
 console.log(URI);
 
+// Connection function
 function connectToDB(URI, options, attempts) {
-    setTimeout(()=>{
-        attempts++; 
+    setTimeout(() => {
+        attempts++;
         if (attempts <= process.env.DB_MAXRECONNECT) {
             return mongoose.connect(URI, options).catch(error => {
-                console.log('*** Retrying connection: ' + attempts + '/' + process.env.DB_MAXRECONNECT + ' ***'); 
+                console.log('*** Retrying connection: ' + attempts + '/' + process.env.DB_MAXRECONNECT + ' ***');
                 console.log('MongoDB Connection Error: ' + error);
                 console.log('');
                 connectToDB(URI, options, attempts);
             })
         }
-    }, process.env.DB_RECONNECTMS); 
+    }, process.env.DB_RECONNECTMS);
     //return mongoose.connection
 }
 
-var db = connectToDB(URI, options, 0);
+// connection
+exports.db = connectToDB(URI, options, 0);
+
+exports.clearDatabase = function () {
+    if (process.env.NODE_ENV !== 'test') {
+        throw new Error('Attempt to clear non testing database!');
+    }
+
+    for (var collection in mongoose.connection.collections) {
+        mongoose.connection.collections[collection].deleteOne(function() {}); 
+    }
+}
+
+
 
 // Enable Logging 
 /*
@@ -38,4 +53,4 @@ db.on('error',  () => {console.log('*** Connection errored *** ')});
 db.on('connected',  () => {console.log('*** Connection connected *** ')});
 */
 
-module.export = db; 
+//module.export = db;

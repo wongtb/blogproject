@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 
 // Setup connection to the database
 var db = require('./database'); 
+//db.clearDatabase(); 
 
 // Send message for default URL
 app.get('/', (req, res) => res.send('Blog Server is up.'));
