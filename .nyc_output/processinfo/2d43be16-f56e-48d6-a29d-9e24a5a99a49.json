@@ -1,0 +1,1 @@
+{"uuid":"2d43be16-f56e-48d6-a29d-9e24a5a99a49","parent":null,"pid":16073,"argv":["/usr/bin/node","/usr/bin/npm","run","test"],"execArgv":[],"cwd":"/home/brian/git/blogproject","time":1564754552966,"ppid":16066,"root":"5fcf4501-6326-41b6-a85d-e0b7964f81ab","coverageFilename":"/home/brian/git/blogproject/.nyc_output/2d43be16-f56e-48d6-a29d-9e24a5a99a49.json","files":[]}

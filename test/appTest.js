@@ -1,7 +1,14 @@
 //const mongoose = require('mongoose')
 var database = require('../database')
-    app = require('../index');
-    dotenv = require('dotenv').config(); // need to obtain secret for decoding the JWT?  
+app = require('../index');
+dotenv = require('dotenv').config(); // need to obtain secret for decoding the JWT?  
+
+// Test Data
+var user = {
+    email: "wongtb@mcmaster.ca",
+    name: "Brian Wong",
+    password: "pw_brian"
+}
 
 
 // Dev Devepncies
@@ -12,18 +19,14 @@ should = chai.should()
 // Middleware for chaiHTTP
 chai.use(chaiHTTP)
 
+// Clean Database
+database.clearDatabase();
+
 // Create User (1)
-describe('Create User', () => {
+describe('Create Initial User', () => {
     it('it should create a user', (done) => {
-        var user = {
-            email: "wongtb@mcmaster.ca",
-            name: "Brian Wong",
-            password: "pw_brian"
-        }
-        
-        database.clearDatabase(); 
-        
-        chai.request('http://localhost:3000')
+
+        chai.request(app)// ('http://localhost:3000')
             .post('/api/user')
             .set('content-type', 'application/x-www-form-urlencoded')
             .send(user)
@@ -33,9 +36,21 @@ describe('Create User', () => {
             })
     })
 })
-// Create User with the same password - should reject
-// Create User with a different password - should get okay
 
+// Create User with the same password - should reject
+describe('Create Already Existing User', () => {
+    it('it should deny a new account', (done) => {
+        
+        chai.request(app)
+            .post('/api/user')
+            .set('content-type', 'application/x-www-form-urlencoded')
+            .send(user)
+            .end((err, res) => {
+                res.should.have.status(403);
+                done();
+            })
+    })
+})
 // Login - should receive a JWT
 // Get Users - should see 2 users
 

@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 
 // Setup connection to the database
 var db = require('./database'); 
-//db.clearDatabase(); 
+db.clearDatabase(); 
 
 // Send message for default URL
 app.get('/', (req, res) => res.send('Blog Server is up.'));
@@ -24,4 +24,4 @@ app.use('/api', apiRoutes)
 app.use('/api/user', userRoutes)
 
 // Launch app to listen to specified port
-app.listen(process.env.SERVER_PORT, function () { console.log("Running RestHub on port " + process.env.SERVER_PORT);});
+module.exports = app.listen(process.env.SERVER_PORT, function () { console.log("Running RestHub on port " + process.env.SERVER_PORT);});
